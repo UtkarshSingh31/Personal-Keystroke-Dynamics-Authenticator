@@ -3,12 +3,22 @@ from pydantic import BaseModel
 import uuid
 import json
 import os
+from fastapi.middleware.cors import CORSMiddleware
+
 
 OWNER_USER_ID = 1  # <-- YOU
 DATA_DIR = "dataset"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # tighten later
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 class TypingSession(BaseModel):
     user_id: int
