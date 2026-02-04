@@ -1,117 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Typing Behavior Collector</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #eee;
-      display: flex;
-      justify-content: center;
-      margin-top: 60px;
-    }
-    .box {
-      width: 600px;
-    }
-    textarea {
-      width: 100%;
-      height: 150px;
-      font-size: 18px;
-      padding: 10px;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    pre {
-      background: #222;
-      padding: 10px;
-      margin-top: 15px;
-    }
+    body { font-family: Arial; padding: 30px; }
+    textarea { width: 100%; height: 120px; font-size: 18px; }
+    button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+    pre { background: #f4f4f4; padding: 10px; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Type the sentence below</h2>
 
-    <textarea id="inputBox" placeholder="Type here..."></textarea>
+<h2>Type the sentence</h2>
+<textarea id="box" placeholder="Type here..."></textarea>
+<br>
+<button onclick="submitData()">Submit</button>
 
-    <button onclick="submitData()">Submit</button>
-
-    <h3>Text Typed:</h3>
-    <pre id="displayText"></pre>
-  </div>
+<h3>Text typed</h3>
+<pre id="out"></pre>
 
 <script>
+const SERVER_URL = "https://YOUR-RENDER-APP.onrender.com/submit";
+
+const userId = Number(prompt("Enter your user id:"));
+
 let keyDownTime = {};
 let sequence = [];
-let lastReleaseTime = null;
+let lastRelease = null;
 let typedText = "";
 
-const userId = prompt("Enter your user id:");
+const box = document.getElementById("box");
+const out = document.getElementById("out");
 
-const inputBox = document.getElementById("inputBox");
-const displayText = document.getElementById("displayText");
-
-inputBox.addEventListener("keydown", (e) => {
-  const now = performance.now();
-  keyDownTime[e.code] = now;
+box.addEventListener("keydown", e => {
+  keyDownTime[e.code] = performance.now();
 });
 
-inputBox.addEventListener("keyup", (e) => {
+box.addEventListener("keyup", e => {
   const now = performance.now();
-  const pressTime = keyDownTime[e.code];
-  if (!pressTime) return;
+  const press = keyDownTime[e.code];
+  if (!press) return;
 
-  const holdTime = (now - pressTime) / 1000;
-  const flightTime = lastReleaseTime === null ? 0 : (pressTime - lastReleaseTime) / 1000;
-  lastReleaseTime = now;
-
-  let keyName = e.key;
+  const hold = (now - press) / 1000;
+  const flight = lastRelease === null ? 0 : (press - lastRelease) / 1000;
+  lastRelease = now;
 
   if (e.key === "Backspace") {
     typedText = typedText.slice(0, -1);
   } else if (e.key.length === 1) {
     typedText += e.key;
-  } else if (e.key === "Enter") {
-    typedText += "\n";
   } else if (e.key === " ") {
     typedText += " ";
+  } else if (e.key === "Enter") {
+    typedText += "\n";
   }
 
-  displayText.textContent = typedText;
+  out.textContent = typedText;
 
   sequence.push({
-    key: keyName,
-    hold_time: Number(holdTime.toFixed(4)),
-    flight_time: Number(flightTime.toFixed(4))
+    key: e.key,
+    hold_time: Number(hold.toFixed(4)),
+    flight_time: Number(flight.toFixed(4))
   });
 
   delete keyDownTime[e.code];
 });
 
 function submitData() {
-  fetch("https://typing-behavior-server-a6ka.onrender.com/submit", {
+  fetch(SERVER_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      user_id: Number(userId),
+      user_id: userId,
       sequence: sequence,
       text_typed: typedText
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    alert("Saved! Label = " + data.label);
-    console.log(data);
-  });
+  .then(r => r.json())
+  .then(d => {
+    alert("Saved. Label = " + d.label);
+    sequence = [];
+    typedText = "";
+    out.textContent = "";
+    box.value = "";
+  })
+  .catch(err => alert("Error: " + err));
 }
 </script>
+
 </body>
 </html>

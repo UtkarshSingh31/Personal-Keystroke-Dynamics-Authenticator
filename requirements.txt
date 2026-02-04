@@ -11,3 +11,4 @@ passlib
 PyJWT
 pwdlib[argon2]
 pynput
+supabase
