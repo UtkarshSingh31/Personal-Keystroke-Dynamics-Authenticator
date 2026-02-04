@@ -1,0 +1,13 @@
+pydantic
+email-validator
+requests
+fastapi[standard]
+uvicorn
+sqlalchemy
+alembic
+pytest
+sqlmodel
+passlib
+PyJWT
+pwdlib[argon2]
+pynput
