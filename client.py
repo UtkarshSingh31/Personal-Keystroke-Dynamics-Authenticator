@@ -3,7 +3,7 @@ from pynput.keyboard import Key
 import time
 import requests
 
-SERVER_URL = "http://YOUR_SERVER_IP:8000/submit"
+SERVER_URL = "https://typing-behavior-server-a6ka.onrender.com/submit"
 USER_ID = int(input("Enter your user id: "))
 
 key_press_time = {}

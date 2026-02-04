@@ -4,13 +4,16 @@ import uuid
 import json
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from db import init_db, get_connection
 
 
-OWNER_USER_ID = 1  # <-- YOU
+
+OWNER_USER_ID = 1  
 DATA_DIR = "dataset"
 os.makedirs(DATA_DIR, exist_ok=True)
 
 app = FastAPI()
+init_db()
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,9 +29,8 @@ class TypingSession(BaseModel):
     text_typed: str
 
 @app.post("/submit")
-def submit_session(data: TypingSession):
+def submit(data: TypingSession):
     session_id = str(uuid.uuid4())
-
     label = 1 if data.user_id == OWNER_USER_ID else 0
 
     payload = {
@@ -39,8 +41,42 @@ def submit_session(data: TypingSession):
         "text_typed": data.text_typed
     }
 
-    filename = f"{DATA_DIR}/session_user{data.user_id}_{session_id}.json"
-    with open(filename, "w") as f:
-        json.dump(payload, f, indent=2)
+    conn = get_connection()
+    cursor = conn.cursor()
 
-    return {"status": "saved", "label": label}
+    cursor.execute(
+        """
+        INSERT INTO typing_sessions (user_id, session_id, label, data_json)
+        VALUES (?, ?, ?, ?)
+        """,
+        (
+            data.user_id,
+            session_id,
+            label,
+            json.dumps(payload)
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "saved",
+        "session_id": session_id,
+        "label": label
+    }
+
+@app.get("/sessions")
+def get_sessions(limit: int = 10):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT data_json FROM typing_sessions ORDER BY created_at DESC LIMIT ?",
+        (limit,)
+    )
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [json.loads(row[0]) for row in rows]
