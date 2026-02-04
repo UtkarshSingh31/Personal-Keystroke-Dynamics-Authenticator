@@ -1,164 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Typing Behaviour Study</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <title>Typing Behaviour Collection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body {
-  background:#0f172a; color:#e5e7eb;
-  font-family:system-ui; padding:30px;
-}
-.container { max-width:800px; margin:auto; }
-.card {
-  background:#111827; border:1px solid #1f2933;
-  border-radius:12px; padding:24px; margin-bottom:20px;
-}
-.prompt { color:#38bdf8; font-size:18px; margin:10px 0; }
-textarea {
-  width:100%; height:120px; background:#020617;
-  border:1px solid #1f2933; color:#fff;
-  font-size:18px; padding:12px; border-radius:8px;
-}
-.progress {
-  height:10px; background:#1f2933;
-  border-radius:6px; overflow:hidden; margin-top:10px;
-}
-.bar {
-  height:100%; width:0%; background:#38bdf8;
-}
-button {
-  margin-top:15px; padding:12px 20px;
-  background:#38bdf8; color:#020617;
-  border:none; border-radius:8px;
-  font-weight:600; cursor:pointer;
-}
-.status { margin-top:10px; color:#9ca3af; }
-.hidden { display:none; }
-</style>
+  <style>
+    :root {
+      --bg: #faf9f6;        /* cream white */
+      --card: #ffffff;
+      --text: #111111;
+      --muted: #555555;
+      --border: #dddddd;
+      --accent: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    .example {
+      background: #f3f3f3;
+      border-left: 4px solid #999;
+      padding: 12px;
+      margin-top: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      color: #333;
+    }
+
+    .warning {
+      font-weight: 600;
+      color: #000;
+      margin-top: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      font-size: 16px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: system-ui, monospace;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #000;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    button {
+      background: #000;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .preview {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f7f7f7;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      color: #222;
+    }
+  </style>
 </head>
 
 <body>
 <div class="container">
 
-<h1>Typing Behaviour Study</h1>
+  <h1>Typing Behaviour Data Collection</h1>
+  <p>
+    This study records <b>how you type</b> (timing and rhythm), not the meaning of what you write.
+  </p>
 
-<div id="mobileWarning" class="card hidden">
-  <h3>Desktop Required</h3>
-  <p>Please use a laptop or desktop keyboard.</p>
-</div>
+  <!-- STEP 1 -->
+  <div class="card">
+    <h2>Step 1: Read this carefully</h2>
+    <ul>
+      <li>Use the <b>same user ID</b> you were given earlier.</li>
+      <li>Type <b>naturally</b>. Do not try to type fast or slow on purpose.</li>
+      <li>Mistakes are allowed. Backspace is allowed.</li>
+      <li>Do not copy-paste anything.</li>
+      <li>We care about <b>keystroke behaviour</b>, not correctness.</li>
+    </ul>
+  </div>
 
-<div id="mainUI" class="card">
-  <p><b>Trial <span id="trialNum">1</span> / 3</b></p>
+  <!-- STEP 2 -->
+  <div class="card">
+    <h2>Step 2: What can you write?</h2>
+    <p>You are free to write <b>anything you want</b>, such as:</p>
+    <ul>
+      <li>A short paragraph about any topic</li>
+      <li>Some code you know</li>
+      <li>Your thoughts, notes, or explanation of something</li>
+      <li>A casual message, like you would type normally</li>
+    </ul>
 
-  <p>Type the sentence below exactly as shown:</p>
-  <div class="prompt" id="sentence"></div>
+    <p class="warning">
+      These examples are only for understanding. <br />
+      <b>Do NOT copy or retype the examples below.</b>
+    </p>
 
-  <textarea id="box" placeholder="Start typing…"></textarea>
+    <div class="example">
+// Example (DO NOT COPY):
+for (int i = 0; i < n; i++) {
+    cout << i << endl;
+}
+    </div>
 
-  <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="example">
+// Example (DO NOT COPY):
+Typing behaviour analysis focuses on how users press and release keys over time.
+    </div>
+  </div>
 
-  <button onclick="submitData()">Submit Trial</button>
-  <div class="status" id="status"></div>
-</div>
+  <!-- STEP 3 -->
+  <div class="card">
+    <h2>Step 3: Type below</h2>
+    <p>
+      When you are ready, start typing in the box below.
+      Your typing will be recorded once you begin.
+    </p>
+
+    <textarea
+      id="box"
+      placeholder="Start typing here..."
+    ></textarea>
+
+    <div class="row">
+      <button onclick="submitData()">Submit</button>
+      <div class="status" id="status">
+        Typing data is being recorded…
+      </div>
+    </div>
+
+    <h2 style="margin-top: 24px;">Live text preview</h2>
+    <div class="preview" id="preview"></div>
+  </div>
 
 </div>
 
 <script>
-/* ---------------- CONFIG ---------------- */
-const SERVER_URL = "https://typing-behavior-server-a6ka.onrender.com/submit";
-const SENTENCE = "The quick brown fox jumps over the lazy dog.";
-const TOTAL_TRIALS = 3;
+  const SERVER_URL = "https://typing-behavior-server-a6ka.onrender.com/submit";
+  const userId = Number(prompt("Enter your user ID (same as earlier):"));
 
-/* ---------------- STATE ---------------- */
-const userId = Number(prompt("Enter your user ID:"));
-let trial = 1;
-let keyDownTime = {};
-let sequence = [];
-let lastRelease = null;
+  let keyDownTime = {};
+  let sequence = [];
+  let lastRelease = null;
+  let typedText = "";
 
-/* ---------------- ELEMENTS ---------------- */
-const box = document.getElementById("box");
-const bar = document.getElementById("bar");
-const status = document.getElementById("status");
-document.getElementById("sentence").textContent = SENTENCE;
-document.getElementById("trialNum").textContent = trial;
+  const box = document.getElementById("box");
+  const preview = document.getElementById("preview");
+  const status = document.getElementById("status");
 
-/* ---------------- MOBILE BLOCK ---------------- */
-if (/Mobi|Android/i.test(navigator.userAgent)) {
-  document.getElementById("mobileWarning").classList.remove("hidden");
-  document.getElementById("mainUI").classList.add("hidden");
-}
-
-/* ---------------- KEY LOGIC ---------------- */
-box.addEventListener("keydown", e => {
-  keyDownTime[e.code] = performance.now();
-});
-
-box.addEventListener("keyup", e => {
-  const press = keyDownTime[e.code];
-  if (!press) return;
-
-  const now = performance.now();
-  const hold = (now - press) / 1000;
-  const flight = lastRelease === null ? 0 : (press - lastRelease) / 1000;
-  lastRelease = now;
-
-  const expectedChar = SENTENCE[box.value.length - 1];
-  if (e.key.length === 1 && e.key !== expectedChar) {
-    status.textContent = "Mistake detected. Input locked.";
-    box.disabled = true;
-    return;
-  }
-
-  sequence.push({
-    key: e.key,
-    hold_time: Number(hold.toFixed(4)),
-    flight_time: Number(flight.toFixed(4))
+  box.addEventListener("keydown", e => {
+    keyDownTime[e.code] = performance.now();
   });
 
-  const progress = (box.value.length / SENTENCE.length) * 100;
-  bar.style.width = progress + "%";
+  box.addEventListener("keyup", e => {
+    const press = keyDownTime[e.code];
+    if (!press) return;
 
-  delete keyDownTime[e.code];
-});
+    const now = performance.now();
+    const hold = (now - press) / 1000;
+    const flight = lastRelease === null ? 0 : (press - lastRelease) / 1000;
+    lastRelease = now;
 
-/* ---------------- SUBMIT ---------------- */
-function submitData() {
-  if (box.value !== SENTENCE) {
-    alert("Sentence does not match exactly.");
-    return;
-  }
-
-  fetch(SERVER_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      user_id: userId,
-      sequence: sequence,
-      text_typed: box.value
-    })
-  })
-  .then(r => r.json())
-  .then(() => {
-    status.textContent = "Trial saved.";
-    sequence = [];
-    box.value = "";
-    bar.style.width = "0%";
-    box.disabled = false;
-    lastRelease = null;
-
-    if (trial < TOTAL_TRIALS) {
-      trial++;
-      document.getElementById("trialNum").textContent = trial;
-    } else {
-      status.textContent = "All trials completed. Thank you.";
-      box.disabled = true;
+    if (e.key === "Backspace") {
+      typedText = typedText.slice(0, -1);
+    } else if (e.key.length === 1) {
+      typedText += e.key;
+    } else if (e.key === "Enter") {
+      typedText += "\n";
     }
-  })
-  .catch(() => status.textContent = "Submission failed.");
-}
+
+    preview.textContent = typedText;
+
+    sequence.push({
+      key: e.key,
+      hold_time: Number(hold.toFixed(4)),
+      flight_time: Number(flight.toFixed(4))
+    });
+
+    delete keyDownTime[e.code];
+  });
+
+  function submitData() {
+    if (sequence.length < 10) {
+      alert("Please type a bit more before submitting.");
+      return;
+    }
+
+    status.textContent = "Submitting…";
+
+    fetch(SERVER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user_id: userId,
+        sequence: sequence,
+        text_typed: typedText
+      })
+    })
+    .then(res => res.json())
+    .then(() => {
+      status.textContent = "Data submitted successfully.";
+      box.value = "";
+      preview.textContent = "";
+      typedText = "";
+      sequence = [];
+      lastRelease = null;
+    })
+    .catch(() => {
+      status.textContent = "Submission failed. Please try again.";
+    });
+  }
 </script>
+
 </body>
 </html>
