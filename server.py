@@ -33,21 +33,20 @@ class TypingSession(BaseModel):
     sequence: list
     text_typed: str
 
-# ---------- ROUTES ----------
 @app.post("/submit")
 def submit(data: TypingSession):
+    session_id = str(uuid.uuid4())
+    label = 1 if data.user_id == OWNER_USER_ID else 0
+
+    payload = {
+        "user_id": data.user_id,
+        "session_id": session_id,
+        "sequence": data.sequence,
+        "label": label,
+        "text_typed": data.text_typed
+    }
+
     try:
-        session_id = str(uuid.uuid4())
-        label = 1 if data.user_id == OWNER_USER_ID else 0
-
-        payload = {
-            "user_id": data.user_id,
-            "session_id": session_id,
-            "sequence": data.sequence,
-            "label": label,
-            "text_typed": data.text_typed
-        }
-
         result = supabase.table("typing_sessions").insert({
             "user_id": data.user_id,
             "session_id": session_id,
@@ -55,8 +54,9 @@ def submit(data: TypingSession):
             "data": payload
         }).execute()
 
-        if result.error:
-            raise RuntimeError(str(result.error))
+        # If something is really wrong, data will be None
+        if result.data is None:
+            raise RuntimeError("Insert failed with no data returned")
 
         return {
             "status": "saved",
@@ -65,11 +65,14 @@ def submit(data: TypingSession):
         }
 
     except Exception as e:
-        # THIS is what fixes the fake CORS error
-        print("ERROR in /submit:", e)
+        print("ERROR:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/admin/download")
 def download_dataset():
-    data = supabase.table("typing_sessions").select("*").execute()
-    return data.data
+    result = supabase.table("typing_sessions").select("*").execute()
+
+    if result.data is None:
+        raise HTTPException(status_code=500, detail="Failed to fetch data")
+
+    return result.data
