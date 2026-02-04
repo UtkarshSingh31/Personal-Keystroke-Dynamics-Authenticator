@@ -68,3 +68,8 @@ def submit(data: TypingSession):
         # THIS is what fixes the fake CORS error
         print("ERROR in /submit:", e)
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/admin/download")
+def download_dataset():
+    data = supabase.table("typing_sessions").select("*").execute()
+    return data.data

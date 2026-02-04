@@ -1,62 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Typing Behavior Collector</title>
-  <style>
-    body { font-family: Arial; padding: 30px; }
-    textarea { width: 100%; height: 120px; font-size: 18px; }
-    button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
-    pre { background: #f4f4f4; padding: 10px; }
-  </style>
+<meta charset="UTF-8" />
+<title>Typing Behaviour Study</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+body {
+  background:#0f172a; color:#e5e7eb;
+  font-family:system-ui; padding:30px;
+}
+.container { max-width:800px; margin:auto; }
+.card {
+  background:#111827; border:1px solid #1f2933;
+  border-radius:12px; padding:24px; margin-bottom:20px;
+}
+.prompt { color:#38bdf8; font-size:18px; margin:10px 0; }
+textarea {
+  width:100%; height:120px; background:#020617;
+  border:1px solid #1f2933; color:#fff;
+  font-size:18px; padding:12px; border-radius:8px;
+}
+.progress {
+  height:10px; background:#1f2933;
+  border-radius:6px; overflow:hidden; margin-top:10px;
+}
+.bar {
+  height:100%; width:0%; background:#38bdf8;
+}
+button {
+  margin-top:15px; padding:12px 20px;
+  background:#38bdf8; color:#020617;
+  border:none; border-radius:8px;
+  font-weight:600; cursor:pointer;
+}
+.status { margin-top:10px; color:#9ca3af; }
+.hidden { display:none; }
+</style>
 </head>
+
 <body>
+<div class="container">
 
-<h2>Type the sentence</h2>
-<textarea id="box" placeholder="Type here..."></textarea>
-<br>
-<button onclick="submitData()">Submit</button>
+<h1>Typing Behaviour Study</h1>
 
-<h3>Text typed</h3>
-<pre id="out"></pre>
+<div id="mobileWarning" class="card hidden">
+  <h3>Desktop Required</h3>
+  <p>Please use a laptop or desktop keyboard.</p>
+</div>
+
+<div id="mainUI" class="card">
+  <p><b>Trial <span id="trialNum">1</span> / 3</b></p>
+
+  <p>Type the sentence below exactly as shown:</p>
+  <div class="prompt" id="sentence"></div>
+
+  <textarea id="box" placeholder="Start typing…"></textarea>
+
+  <div class="progress"><div class="bar" id="bar"></div></div>
+
+  <button onclick="submitData()">Submit Trial</button>
+  <div class="status" id="status"></div>
+</div>
+
+</div>
 
 <script>
+/* ---------------- CONFIG ---------------- */
 const SERVER_URL = "https://typing-behavior-server-a6ka.onrender.com/submit";
+const SENTENCE = "The quick brown fox jumps over the lazy dog.";
+const TOTAL_TRIALS = 3;
 
-const userId = Number(prompt("Enter your user id:"));
-
+/* ---------------- STATE ---------------- */
+const userId = Number(prompt("Enter your user ID:"));
+let trial = 1;
 let keyDownTime = {};
 let sequence = [];
 let lastRelease = null;
-let typedText = "";
 
+/* ---------------- ELEMENTS ---------------- */
 const box = document.getElementById("box");
-const out = document.getElementById("out");
+const bar = document.getElementById("bar");
+const status = document.getElementById("status");
+document.getElementById("sentence").textContent = SENTENCE;
+document.getElementById("trialNum").textContent = trial;
 
+/* ---------------- MOBILE BLOCK ---------------- */
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+  document.getElementById("mobileWarning").classList.remove("hidden");
+  document.getElementById("mainUI").classList.add("hidden");
+}
+
+/* ---------------- KEY LOGIC ---------------- */
 box.addEventListener("keydown", e => {
   keyDownTime[e.code] = performance.now();
 });
 
 box.addEventListener("keyup", e => {
-  const now = performance.now();
   const press = keyDownTime[e.code];
   if (!press) return;
 
+  const now = performance.now();
   const hold = (now - press) / 1000;
   const flight = lastRelease === null ? 0 : (press - lastRelease) / 1000;
   lastRelease = now;
 
-  if (e.key === "Backspace") {
-    typedText = typedText.slice(0, -1);
-  } else if (e.key.length === 1) {
-    typedText += e.key;
-  } else if (e.key === " ") {
-    typedText += " ";
-  } else if (e.key === "Enter") {
-    typedText += "\n";
+  const expectedChar = SENTENCE[box.value.length - 1];
+  if (e.key.length === 1 && e.key !== expectedChar) {
+    status.textContent = "Mistake detected. Input locked.";
+    box.disabled = true;
+    return;
   }
-
-  out.textContent = typedText;
 
   sequence.push({
     key: e.key,
@@ -64,30 +118,47 @@ box.addEventListener("keyup", e => {
     flight_time: Number(flight.toFixed(4))
   });
 
+  const progress = (box.value.length / SENTENCE.length) * 100;
+  bar.style.width = progress + "%";
+
   delete keyDownTime[e.code];
 });
 
+/* ---------------- SUBMIT ---------------- */
 function submitData() {
+  if (box.value !== SENTENCE) {
+    alert("Sentence does not match exactly.");
+    return;
+  }
+
   fetch(SERVER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       user_id: userId,
       sequence: sequence,
-      text_typed: typedText
+      text_typed: box.value
     })
   })
   .then(r => r.json())
-  .then(d => {
-    alert("Saved. Label = " + d.label);
+  .then(() => {
+    status.textContent = "Trial saved.";
     sequence = [];
-    typedText = "";
-    out.textContent = "";
     box.value = "";
+    bar.style.width = "0%";
+    box.disabled = false;
+    lastRelease = null;
+
+    if (trial < TOTAL_TRIALS) {
+      trial++;
+      document.getElementById("trialNum").textContent = trial;
+    } else {
+      status.textContent = "All trials completed. Thank you.";
+      box.disabled = true;
+    }
   })
-  .catch(err => alert("Error: " + err));
+  .catch(() => status.textContent = "Submission failed.");
 }
 </script>
-
 </body>
 </html>
