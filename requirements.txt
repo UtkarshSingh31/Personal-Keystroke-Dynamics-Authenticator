@@ -12,3 +12,7 @@ PyJWT
 pwdlib[argon2]
 pynput
 supabase
+python-dotenv
+numpy
+scikit-learn
+pandas
