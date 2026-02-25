@@ -7,7 +7,7 @@
 
   <style>
     :root {
-      --bg: #faf9f6;        /* cream white */
+      --bg: #faf9f6;
       --card: #ffffff;
       --text: #111111;
       --muted: #555555;
@@ -195,6 +195,14 @@ Typing behaviour analysis focuses on how users press and release keys over time.
       Your typing will be recorded once you begin.
     </p>
 
+    <p class="warning">
+      Please write at your <b>normal typing speed</b> for about <b>1–3 minutes</b>.
+    </p>
+
+    <p class="status" id="timer">
+      Time elapsed: 0:00
+    </p>
+
     <textarea
       id="box"
       placeholder="Start typing here..."
@@ -222,11 +230,30 @@ Typing behaviour analysis focuses on how users press and release keys over time.
   let lastRelease = null;
   let typedText = "";
 
+  let startTime = null;
+  let timerInterval = null;
+
   const box = document.getElementById("box");
   const preview = document.getElementById("preview");
   const status = document.getElementById("status");
 
+  function startTimer() {
+    if (timerInterval) return;
+
+    startTime = performance.now();
+    timerInterval = setInterval(() => {
+      const elapsedMs = performance.now() - startTime;
+      const seconds = Math.floor(elapsedMs / 1000);
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+
+      document.getElementById("timer").textContent =
+        `Time elapsed: ${mins}:${secs.toString().padStart(2, "0")}`;
+    }, 500);
+  }
+
   box.addEventListener("keydown", e => {
+    startTimer();
     keyDownTime[e.code] = performance.now();
   });
 
@@ -283,6 +310,11 @@ Typing behaviour analysis focuses on how users press and release keys over time.
       typedText = "";
       sequence = [];
       lastRelease = null;
+
+      clearInterval(timerInterval);
+      timerInterval = null;
+      startTime = null;
+      document.getElementById("timer").textContent = "Time elapsed: 0:00";
     })
     .catch(() => {
       status.textContent = "Submission failed. Please try again.";
