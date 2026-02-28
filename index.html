@@ -56,24 +56,6 @@
       margin-bottom: 24px;
     }
 
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin-bottom: 6px;
-    }
-
-    .example {
-      background: #f3f3f3;
-      border-left: 4px solid #999;
-      padding: 12px;
-      margin-top: 10px;
-      font-family: monospace;
-      white-space: pre-wrap;
-      color: #333;
-    }
-
     .warning {
       font-weight: 600;
       color: #000;
@@ -96,6 +78,25 @@
       border-color: #000;
     }
 
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+
+    .prompt-box {
+      margin-top: 10px;
+      padding: 12px;
+      background: #f3f3f3;
+      border-left: 4px solid #000;
+      border-radius: 6px;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
     .row {
       display: flex;
       justify-content: space-between;
@@ -113,11 +114,6 @@
       font-size: 16px;
       border-radius: 8px;
       cursor: pointer;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
 
     .status {
@@ -146,73 +142,40 @@
     This study records <b>how you type</b> (timing and rhythm), not the meaning of what you write.
   </p>
 
-  <!-- STEP 1 -->
-  <div class="card">
-    <h2>Step 1: Read this carefully</h2>
-    <ul>
-      <li>Use the <b>same user ID</b> you were given earlier.</li>
-      <li>Type <b>naturally</b>. Do not try to type fast or slow on purpose.</li>
-      <li>Mistakes are allowed. Backspace is allowed.</li>
-      <li>Do not copy-paste anything.</li>
-      <li>We care about <b>keystroke behaviour</b>, not correctness.</li>
-    </ul>
-  </div>
-
-  <!-- STEP 2 -->
-  <div class="card">
-    <h2>Step 2: What can you write?</h2>
-    <p>You are free to write <b>anything you want</b>, such as:</p>
-    <ul>
-      <li>A short paragraph about any topic</li>
-      <li>Some code you know</li>
-      <li>Your thoughts, notes, or explanation of something</li>
-      <li>A casual message, like you would type normally</li>
-    </ul>
-
-    <p class="warning">
-      These examples are only for understanding. <br />
-      <b>Do NOT copy or retype the examples below.</b>
-    </p>
-
-    <div class="example">
-// Example (DO NOT COPY):
-for (int i = 0; i < n; i++) {
-    cout << i << endl;
-}
-    </div>
-
-    <div class="example">
-// Example (DO NOT COPY):
-Typing behaviour analysis focuses on how users press and release keys over time.
-    </div>
-  </div>
-
-  <!-- STEP 3 -->
   <div class="card">
     <h2>Step 3: Type below</h2>
-    <p>
-      When you are ready, start typing in the box below.
-      Your typing will be recorded once you begin.
-    </p>
 
     <p class="warning">
       Please write at your <b>normal typing speed</b> for about <b>1–3 minutes</b>.
     </p>
 
-    <p class="status" id="timer">
-      Time elapsed: 0:00
-    </p>
+    <!-- ✅ NEW: Question selector -->
+    <label><b>Optional: Choose a question to write about</b></label>
+    <select id="questionSelect">
+      <option value="">-- Select a question (optional) --</option>
+      <option>Tell me about yourself.</option>
+      <option>Describe a challenging problem you solved.</option>
+      <option>What are your strengths and weaknesses?</option>
+      <option>Why did you choose your field of study?</option>
+      <option>Explain a project you are proud of.</option>
+      <option>Where do you see yourself in 5 years?</option>
+      <option>Describe a failure and what you learned.</option>
+      <option>How do you handle pressure or deadlines?</option>
+      <option>What motivates you to learn new things?</option>
+      <option>Explain a technical concept you understand well.</option>
+      <option>What is a recent thing you learned?</option>
+      <option>Why should someone hire you?</option>
+    </select>
 
-    <textarea
-      id="box"
-      placeholder="Start typing here..."
-    ></textarea>
+    <div class="prompt-box" id="selectedPrompt" style="display:none;"></div>
+
+    <p class="status" id="timer">Time elapsed: 0:00</p>
+
+    <textarea id="box" placeholder="Start typing here..."></textarea>
 
     <div class="row">
       <button onclick="submitData()">Submit</button>
-      <div class="status" id="status">
-        Typing data is being recorded…
-      </div>
+      <div class="status" id="status">Typing data is being recorded…</div>
     </div>
 
     <h2 style="margin-top: 24px;">Live text preview</h2>
@@ -221,6 +184,25 @@ Typing behaviour analysis focuses on how users press and release keys over time.
 
 </div>
 
+<script>
+  const questionSelect = document.getElementById("questionSelect");
+  const selectedPrompt = document.getElementById("selectedPrompt");
+
+  questionSelect.addEventListener("change", () => {
+    if (!questionSelect.value) {
+      selectedPrompt.style.display = "none";
+      selectedPrompt.textContent = "";
+      return;
+    }
+    selectedPrompt.style.display = "block";
+    selectedPrompt.textContent =
+      "Selected question:\n" +
+      questionSelect.value +
+      "\n\nWrite your answer in your own words below.";
+  });
+</script>
+
+<!-- 🔽 YOUR ORIGINAL SCRIPT (UNCHANGED) 🔽 -->
 <script>
   const SERVER_URL = "https://typing-behavior-server-a6ka.onrender.com/submit";
   const userId = Number(prompt("Enter your user ID (same as earlier):"));
@@ -266,13 +248,9 @@ Typing behaviour analysis focuses on how users press and release keys over time.
     const flight = lastRelease === null ? 0 : (press - lastRelease) / 1000;
     lastRelease = now;
 
-    if (e.key === "Backspace") {
-      typedText = typedText.slice(0, -1);
-    } else if (e.key.length === 1) {
-      typedText += e.key;
-    } else if (e.key === "Enter") {
-      typedText += "\n";
-    }
+    if (e.key === "Backspace") typedText = typedText.slice(0, -1);
+    else if (e.key.length === 1) typedText += e.key;
+    else if (e.key === "Enter") typedText += "\n";
 
     preview.textContent = typedText;
 
