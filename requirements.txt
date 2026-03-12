@@ -16,3 +16,5 @@ python-dotenv
 numpy
 scikit-learn
 pandas
+streamlit
+torch
