@@ -1,0 +1,256 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: white;
+  min-height: 100vh;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+header h1 {
+  color: #2c3e50;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: #7f8c8d;
+  font-size: 1.1em;
+}
+
+main {
+  margin-bottom: 40px;
+}
+
+section {
+  margin-bottom: 30px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-group label {
+  font-weight: bold;
+  color: #495057;
+}
+
+select {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status-indicator {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.status-indicator.connecting {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.status-indicator.connected {
+  background-color: #28a745;
+  color: white;
+}
+
+.status-indicator.disconnected {
+  background-color: #dc3545;
+  color: white;
+}
+
+.auth-section h2,
+.typing-section h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 1.5em;
+}
+
+.auth-display {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.probability-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress {
+  height: 100%;
+  background-color: #007bff;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.probability-text {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.auth-message {
+  text-align: center;
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.typing-section {
+  text-align: center;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.instructions {
+  color: #6c757d;
+  font-size: 14px;
+  font-style: italic;
+}
+
+footer {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.status-badge.connected {
+  background: rgba(35, 134, 54, 0.1);
+  color: #2ea043;
+  border-color: rgba(35, 134, 54, 0.2);
+}
+
+.status-badge.disconnected {
+  background: rgba(248, 81, 73, 0.1);
+  color: #f85149;
+  border-color: rgba(248, 81, 73, 0.2);
+}
+
+.auth-panel {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.auth-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #21262d;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #8b949e;
+  border-radius: 4px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
+}
+
+.prob-text {
+  font-size: 0.9rem;
+  color: #8b949e;
+}
+
+.prob-text span {
+  font-weight: 600;
+  color: #c9d1d9;
+}
+
+.input-area textarea {
+  width: 100%;
+  min-height: 150px;
+  background: #0d1117;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-area textarea:focus {
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+/* Dynamic State Classes */
+.is-owner-true .progress-bar { background: #2ea043; }
+.is-owner-true .auth-header h2 { color: #2ea043; }
+
+.is-owner-false .progress-bar { background: #f85149; }
+.is-owner-false .auth-header h2 { color: #f85149; }

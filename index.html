@@ -22,28 +22,23 @@
       padding: 40px 20px;
     }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .container { max-width: 900px; margin: 0 auto; }
 
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 24px;
-      margin-bottom: 24px;
     }
 
     textarea {
       width: 100%;
       min-height: 180px;
-      resize: vertical;
       font-size: 16px;
       padding: 14px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      font-family: system-ui, monospace;
+      font-family: monospace;
     }
 
     select {
@@ -66,11 +61,7 @@
       margin-top: 16px;
     }
 
-    .status {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 10px;
-    }
+    .status { font-size: 14px; color: var(--muted); margin-top: 10px; }
 
     .preview {
       margin-top: 16px;
@@ -89,67 +80,50 @@
       border-left: 4px solid #000;
       border-radius: 6px;
       font-size: 14px;
-      white-space: pre-wrap;
     }
   </style>
 </head>
 
 <body>
 <div class="container">
-
   <div class="card">
     <h2>Typing Behaviour Data Collection</h2>
-    <p>
-      Please type at your <b>normal typing speed</b> for about <b>1–3 minutes</b>.
-      Do not copy-paste.
-    </p>
+    <p>Please type naturally for 1–3 minutes. No copy-paste.</p>
 
-    <label><b>Optional: Choose a question to write about</b></label>
     <select id="questionSelect">
-      <option value="">-- Select a question (optional) --</option>
+      <option value="">-- Optional: Choose a question --</option>
       <option>Tell me about yourself.</option>
       <option>Describe a challenging problem you solved.</option>
-      <option>What are your strengths and weaknesses?</option>
-      <option>Why did you choose your field of study?</option>
       <option>Explain a project you are proud of.</option>
       <option>Where do you see yourself in 5 years?</option>
-      <option>Describe a failure and what you learned.</option>
-      <option>How do you handle pressure or deadlines?</option>
-      <option>What motivates you to learn new things?</option>
-      <option>Explain a technical concept you understand well.</option>
-      <option>What is a recent thing you learned?</option>
-      <option>Why should someone hire you?</option>
     </select>
 
-    <div class="prompt-box" id="selectedPrompt" style="display:none;"></div>
+    <div id="selectedPrompt" class="prompt-box" style="display:none;"></div>
 
     <p id="timer" class="status">Time elapsed: 0:00</p>
 
     <textarea id="box" placeholder="Start typing here..."></textarea>
 
     <button onclick="submitData()">Submit</button>
-    <div id="status" class="status">Typing data is being recorded…</div>
+    <div id="status" class="status">Recording…</div>
 
-    <h3>Live Preview</h3>
     <div id="preview" class="preview"></div>
   </div>
-
 </div>
 
-<!-- Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ✅ FIXED SUPABASE CDN (Pinned Version) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
 
 <script>
-  // 🔐 REPLACE THESE
   const SUPABASE_URL = "https://mryfvjiigepemmchtzlb.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1yeWZ2amlpZ2VwZW1tY2h0emxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyMDA2MTYsImV4cCI6MjA4NTc3NjYxNn0.l6gmbJ4Kg7wmObfN2H3_pi15oD-O45SxH7L-oCo6J4I";
 
-  const supabaseClient = supabase.createClient(
+  const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
 
-  const userId = Number(prompt("Enter your user ID (same as earlier):"));
+  const userId = Number(prompt("Enter your user ID:"));
 
   const box = document.getElementById("box");
   const preview = document.getElementById("preview");
@@ -171,20 +145,16 @@
       return;
     }
     selectedPrompt.style.display = "block";
-    selectedPrompt.textContent =
-      "Selected question:\n" +
-      questionSelect.value +
-      "\n\nWrite your answer below in your own words.";
+    selectedPrompt.textContent = questionSelect.value;
   });
 
   function startTimer() {
     if (timerInterval) return;
-
     startTime = performance.now();
     timerInterval = setInterval(() => {
-      const seconds = Math.floor((performance.now() - startTime) / 1000);
+      const s = Math.floor((performance.now() - startTime) / 1000);
       timerEl.textContent =
-        `Time elapsed: ${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,"0")}`;
+        `Time elapsed: ${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
     }, 500);
   }
 
@@ -232,13 +202,10 @@
       .from("typing_sessions")
       .insert({
         user_id: userId,
-        session_id: session_id,
-        label: label,
+        session_id,
+        label,
         data: {
-          user_id: userId,
-          session_id: session_id,
-          label: label,
-          sequence: sequence,
+          sequence,
           text_typed: typedText
         }
       });
@@ -256,9 +223,7 @@
     typedText = "";
     sequence = [];
     lastRelease = null;
-
     clearInterval(timerInterval);
-    timerInterval = null;
     timerEl.textContent = "Time elapsed: 0:00";
   }
 </script>

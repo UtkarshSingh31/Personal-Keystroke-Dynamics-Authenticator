@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DynamoAuth - Keystroke Authentication</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>DynamoAuth</h1>
+      <p>Secure Keystroke Dynamics Authentication System</p>
+    </header>
+
+    <main>
+      <section class="controls">
+        <div class="control-group">
+          <label for="modelSelect">Select Model:</label>
+          <select id="modelSelect">
+            <option value="RNN">RNN</option>
+            <option value="LSTM" selected>LSTM</option>
+            <option value="GRU">GRU</option>
+          </select>
+        </div>
+        <div class="status">
+          <span id="wsStatus" class="status-indicator">Connecting...</span>
+        </div>
+      </section>
+
+      <section class="auth-section">
+        <h2>Authentication Status</h2>
+        <div class="auth-display">
+          <div class="probability-bar">
+            <div class="progress" id="authProbabilityBar"></div>
+          </div>
+          <div class="probability-text">
+            Match Probability: <span id="authProbabilityVal">0%</span>
+          </div>
+          <div class="auth-message" id="authStatusText">Ready for authentication</div>
+        </div>
+      </section>
+
+      <section class="typing-section">
+        <h2>Type to Authenticate</h2>
+        <textarea id="typingArea" placeholder="Begin typing your password or sample text here..."></textarea>
+        <p class="instructions">Type naturally as you would normally. The system analyzes your keystroke patterns in real-time.</p>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2024 DynamoAuth. Real-time keystroke authentication.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+</html>
