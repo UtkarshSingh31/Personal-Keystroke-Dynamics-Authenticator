@@ -2,6 +2,11 @@
 **/__pycache__
 **/.venv
 
-**/data
+
+data/X.npy
+data/y.npy
+data/raw_supabase_data.json
+
+!data/*.dvc
 
 **/models
