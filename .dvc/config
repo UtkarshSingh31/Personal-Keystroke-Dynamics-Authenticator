@@ -1,0 +1,4 @@
+[core]
+    remote = my_local_remote
+['remote "my_local_remote"']
+    url = ~/dvc_remote_storage
