@@ -1,4 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Theme switching
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+    
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            htmlElement.classList.add('light-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            htmlElement.classList.remove('light-mode');
+            themeToggle.textContent = '🌙';
+        }
+    }
+    
+    function toggleTheme() {
+        const currentTheme = htmlElement.classList.contains('light-mode') ? 'light' : 'dark';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        if (newTheme === 'light') {
+            htmlElement.classList.add('light-mode');
+            themeToggle.textContent = '☀️';
+        } else {
+            htmlElement.classList.remove('light-mode');
+            themeToggle.textContent = '🌙';
+        }
+        
+        localStorage.setItem('theme', newTheme);
+    }
+    
+    initTheme();
+    themeToggle.addEventListener('click', toggleTheme);
+    
     const wsStatus = document.getElementById('wsStatus');
     const wsStatusText = document.getElementById('wsStatusText');
     const modelSelect = document.getElementById('modelSelect');
