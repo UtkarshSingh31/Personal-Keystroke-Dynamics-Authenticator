@@ -44,21 +44,22 @@ body {
 }
 
 header {
-  background: #111;
-  border: 1px solid #2f2f2f;
+  background: #0c0c0c;
+  border: 1px solid #333;
+  padding: 12px 16px;
 }
 
 .card {
-  background: #111;
-  border: 1px solid #2f2f2f;
-  padding: 18px;
-  margin-bottom: 12px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  padding: 12px;
+  margin-bottom: 10px;
 }
 
 .card-header {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #fff;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .typing-card textarea {
@@ -298,26 +299,25 @@ html, body {
 
 /* Card Styles */
 .card {
-  background: rgba(30, 41, 59, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 16px;
-  padding: 30px;
-  margin-bottom: 25px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  background: #000;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 5px 14px rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
 }
 
 .card:hover {
-  border-color: rgba(148, 163, 184, 0.4);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  border-color: #fff;
+  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.10);
 }
 
 .card-header {
-  font-size: 1.3em;
+  font-size: 1rem;
   font-weight: 700;
-  color: #e0e7ff;
-  margin-bottom: 20px;
+  color: #fff;
+  margin-bottom: 10px;
   padding-bottom: 15px;
   border-bottom: 2px solid rgba(129, 140, 248, 0.3);
 }

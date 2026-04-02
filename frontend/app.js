@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (data.status === "waiting") {
                 authStatusText.textContent = '⏳ ' + data.msg;
-                authProbabilityBar.style.width = "0%";
+                authStatusText.style.backgroundColor = '#222';
+                authStatusText.style.color = '#fff';
+                authProbabilityBar.style.background = '#666';
+                authProbabilityBar.style.width = "8%";
                 authProbabilityVal.textContent = "0%";
                 updateCircleProgress(0);
             } else if (data.status === "success") {
@@ -64,14 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (isOwner) {
                     authStatusText.innerHTML = '✅ <strong>AUTHENTICATED</strong><br><small>Welcome back!</small>';
-                    authStatusText.style.backgroundColor = '#123a1a';
-                    authStatusText.style.color = '#a7f7a7';
+                    authStatusText.style.backgroundColor = '#0b3a0b';
+                    authStatusText.style.color = '#bdefb8';
                     authProbabilityBar.style.background = '#0f0';
                 } else {
                     authStatusText.innerHTML = '⚠️ <strong>SUSPICIOUS</strong><br><small>Potential intruder</small>';
-                    authStatusText.style.backgroundColor = '#4a0808';
-                    authStatusText.style.color = '#ffcfcf';
-                    authProbabilityBar.style.background = '#f00';
+                    authStatusText.style.backgroundColor = '#5a0404';
+                    authStatusText.style.color = '#ffdada';
+                    authProbabilityBar.style.background = '#ff1c1c';
                 }
                 authProbabilityBar.style.width = percentage + '%';
                 authProbabilityVal.textContent = percentage + '%';
