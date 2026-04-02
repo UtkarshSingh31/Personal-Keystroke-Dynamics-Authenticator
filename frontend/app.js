@@ -62,16 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prob = data.probability;
                 const percentage = (prob * 100).toFixed(1);
                 
-                authStatusText.innerHTML = isOwner 
-                    ? '✅ <strong>AUTHENTICATED</strong><br><small>Welcome back!</small>' 
-                    : '⚠️ <strong>SUSPICIOUS ACTIVITY</strong><br><small>Pattern mismatch detected</small>';
-                    
+                if (isOwner) {
+                    authStatusText.innerHTML = '✅ <strong>AUTHENTICATED</strong><br><small>Welcome back!</small>';
+                    authStatusText.style.backgroundColor = '#123a1a';
+                    authStatusText.style.color = '#a7f7a7';
+                    authProbabilityBar.style.background = '#0f0';
+                } else {
+                    authStatusText.innerHTML = '⚠️ <strong>SUSPICIOUS</strong><br><small>Potential intruder</small>';
+                    authStatusText.style.backgroundColor = '#4a0808';
+                    authStatusText.style.color = '#ffcfcf';
+                    authProbabilityBar.style.background = '#f00';
+                }
                 authProbabilityBar.style.width = percentage + '%';
                 authProbabilityVal.textContent = percentage + '%';
                 updateCircleProgress(prob * 100);
-                
-                // Add glow effect based on authenticity
-                authStatusText.parentElement.className = isOwner ? 'auth-display auth-success' : 'auth-display auth-warning';
             }
         };
 

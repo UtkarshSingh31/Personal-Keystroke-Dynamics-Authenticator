@@ -30,12 +30,61 @@ html {
 
 body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  color: #e2e8f0;
-  line-height: 1.6;
+  background: #000;
+  color: #fff;
+  line-height: 1.4;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+}
+
+.container {
+  background: #0a0a0a;
+  border: 1px solid #2f2f2f;
+}
+
+header {
+  background: #111;
+  border: 1px solid #2f2f2f;
+}
+
+.card {
+  background: #111;
+  border: 1px solid #2f2f2f;
+  padding: 18px;
+  margin-bottom: 12px;
+}
+
+.card-header {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.typing-card textarea {
+  color: #fff;
+  background: #0c0c0c;
+  border: 1px solid #2f2f2f;
+}
+
+.control-item label,
+.model-info,
+.auth-message,
+.stats-card .stat-label,
+.connection-badge,
+.keystroke-counter {
+  color: #ddd;
+}
+
+.select,
+#modelSelect {
+  background: #000;
+  border: 1px solid #444;
+  color: #fff;
+}
+
+.status-pulse {
+  background: #f8ff00;
 }
 
 .stars {
