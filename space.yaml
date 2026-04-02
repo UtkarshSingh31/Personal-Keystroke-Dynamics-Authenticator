@@ -1,0 +1,12 @@
+---
+title: DynamoAuth Backend
+emoji: 🔐
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
+# DynamoAuth - Real-time Keystroke Authentication Backend
+# FastAPI-based WebSocket server for keystroke dynamics verification
