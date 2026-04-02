@@ -9,15 +9,6 @@ A real-time keystroke authentication system using machine learning models (RNN, 
 - Data collection and storage via Supabase
 - Scalable preprocessing with StandardScaler
 
-## Setup
-
-### Environment Variables
-
-Set the following secrets in your Hugging Face Space:
-
-- `SUPABASE_URL`: Your Supabase project URL
-- `SUPABASE_KEY`: Your Supabase anon key
-
 ### Files Structure
 
 - `app.py`: Main entry point for the FastAPI application
@@ -61,6 +52,61 @@ Response:
 2. Set environment variables in `.env`
 3. Run: `python app.py`
 
-## Deployment
+## Deployment on Hugging Face Spaces
 
-This app is configured for deployment on Hugging Face Spaces as an API space.
+### Prerequisites
+- Hugging Face account
+- Repository on GitHub
+
+### Steps
+
+1. **Create a Hugging Face Space**
+   - Go to [huggingface.co/spaces](https://huggingface.co/spaces)
+   - Click "Create new Space"
+   - Select **SDK: API**
+   - Choose appropriate license and visibility
+
+2. **Add Secrets**
+   - In Space Settings → Secrets, add:
+   - `SUPABASE_URL`: Your Supabase project URL
+   - `SUPABASE_KEY`: Your Supabase anonymous key
+
+3. **Push Code via Git**
+   ```bash
+   git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/dynamoauth-backend
+   git push hf main
+   ```
+
+4. **Use Backend-Specific Requirements**
+   - For Hugging Face, use `requirements-hf.txt` instead of the full `requirements.txt`
+   - This includes only essential dependencies and avoids conflicts
+
+### Troubleshooting
+
+**Config Error on Hugging Face?**
+- Check Space Logs for the specific error
+- Ensure `SUPABASE_URL` and `SUPABASE_KEY` are set
+- Verify `app.py` is in the root directory
+- Make sure all model files exist in `models/` directory
+- Check that `data/raw_supabase_data.json` exists
+
+**Space won't start?**
+- Remove unnecessary heavy packages (streamlit, mlflow, dvc, pynput)
+- Use pinned versions in requirements.txt
+- Check if torch installation completes (it's large, may take time)
+
+### API Documentation
+
+Once deployed at `https://YOUR_USERNAME-dynamoauth-backend.hf.space`:
+
+- **Health Check**: `GET /`
+- **WebSocket**: `wss://YOUR_USERNAME-dynamoauth-backend.hf.space/ws/detect`
+
+Example WebSocket connection:
+```javascript
+const ws = new WebSocket('wss://YOUR_USERNAME-dynamoauth-backend.hf.space/ws/detect');
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('Is Owner:', data.is_owner);
+};
+```
