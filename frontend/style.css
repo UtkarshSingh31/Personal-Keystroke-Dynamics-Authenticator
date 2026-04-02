@@ -168,7 +168,23 @@ header {
 
 /* Main Content */
 main {
-  margin-bottom: 50px;
+  margin-bottom: 0;
+  height: calc(100vh - 220px);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  grid-template-rows: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.container.fullscreen {
+  min-height: 100vh;
+  max-width: 100vw;
+  padding: 16px;
+}
+
+html, body {
+  overflow: hidden;
 }
 
 /* Card Styles */

@@ -9,7 +9,7 @@
 <body>
   <div class="stars"></div>
   
-  <div class="container">
+  <div class="container fullscreen">
     <header>
       <div class="header-content">
         <div class="logo-wrapper">
@@ -23,8 +23,7 @@
       </div>
     </header>
 
-    <main>
-      <!-- Model Selection Card -->
+    <main class="grid-dashboard">
       <section class="card controls-card">
         <div class="card-header">⚙️ Configuration</div>
         <div class="control-grid">
@@ -42,7 +41,6 @@
         </div>
       </section>
 
-      <!-- Authentication Status Card -->
       <section class="card auth-card">
         <div class="card-header">🎯 Authentication Status</div>
         <div class="auth-display">
@@ -67,45 +65,26 @@
         </div>
       </section>
 
-      <!-- Typing Section -->
       <section class="card typing-card">
         <div class="card-header">⌨️ Type to Authenticate</div>
         <div class="typing-container">
-          <textarea 
-            id="typingArea" 
-            placeholder="Start typing naturally..." 
-            spellcheck="false"
-          ></textarea>
-          <div class="keystroke-counter">
-            <span>Keystrokes captured: <strong id="keystrokeCount">0</strong></span>
-          </div>
-          <p class="instructions">💡 The system analyzes your unique keystroke patterns in real-time. Type naturally for best results.</p>
+          <textarea id="typingArea" placeholder="Start typing naturally..." spellcheck="false"></textarea>
+          <div class="keystroke-counter"><span>Keystrokes captured: <strong id="keystrokeCount">0</strong></span></div>
         </div>
       </section>
 
-      <!-- Real-time Stats -->
       <section class="card stats-card">
         <div class="card-header">📊 Real-time Statistics</div>
         <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-value" id="avgHoldTime">--</div>
-            <div class="stat-label">Avg Hold Time</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="avgFlightTime">--</div>
-            <div class="stat-label">Avg Flight Time</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="typingSpeed">--</div>
-            <div class="stat-label">WPM</div>
-          </div>
+          <div class="stat-item"><div class="stat-value" id="avgHoldTime">--</div><div class="stat-label">Avg Hold Time</div></div>
+          <div class="stat-item"><div class="stat-value" id="avgFlightTime">--</div><div class="stat-label">Avg Flight Time</div></div>
+          <div class="stat-item"><div class="stat-value" id="typingSpeed">--</div><div class="stat-label">WPM</div></div>
         </div>
       </section>
     </main>
 
     <footer>
       <p>🔒 DynamoAuth - Biometric Authentication via Keystroke Dynamics | Privacy First</p>
-      <p><small>Real-time ML-powered security verification</small></p>
     </footer>
   </div>
 
