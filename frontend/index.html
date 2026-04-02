@@ -7,53 +7,108 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="stars"></div>
+  
   <div class="container">
     <header>
-      <h1>DynamoAuth</h1>
-      <p>Secure Keystroke Dynamics Authentication System</p>
+      <div class="header-content">
+        <div class="logo-wrapper">
+          <h1>🔐 DynamoAuth</h1>
+          <p>AI-Powered Keystroke Biometrics</p>
+        </div>
+        <div class="connection-badge">
+          <span id="wsStatus" class="status-pulse">●</span>
+          <span id="wsStatusText">Connecting...</span>
+        </div>
+      </div>
     </header>
 
     <main>
-      <section class="controls">
-        <div class="control-group">
-          <label for="modelSelect">Select Model:</label>
-          <select id="modelSelect">
-            <option value="RNN">RNN</option>
-            <option value="LSTM" selected>LSTM</option>
-            <option value="GRU">GRU</option>
-          </select>
-        </div>
-        <div class="status">
-          <span id="wsStatus" class="status-indicator">Connecting...</span>
+      <!-- Model Selection Card -->
+      <section class="card controls-card">
+        <div class="card-header">⚙️ Configuration</div>
+        <div class="control-grid">
+          <div class="control-item">
+            <label for="modelSelect">AI Model</label>
+            <select id="modelSelect">
+              <option value="RNN">🧠 RNN (Recurrent)</option>
+              <option value="LSTM" selected>⚡ LSTM (Advanced)</option>
+              <option value="GRU">🚀 GRU (Fast)</option>
+            </select>
+          </div>
+          <div class="model-info">
+            <small id="modelDesc">Long Short-Term Memory network for temporal pattern recognition</small>
+          </div>
         </div>
       </section>
 
-      <section class="auth-section">
-        <h2>Authentication Status</h2>
+      <!-- Authentication Status Card -->
+      <section class="card auth-card">
+        <div class="card-header">🎯 Authentication Status</div>
         <div class="auth-display">
-          <div class="probability-bar">
-            <div class="progress" id="authProbabilityBar"></div>
+          <div class="auth-status-wrapper">
+            <div class="probability-circle">
+              <svg class="circle-progress" viewBox="0 0 100 100">
+                <circle class="circle-bg" cx="50" cy="50" r="45"></circle>
+                <circle class="circle-fill" id="circleProgress" cx="50" cy="50" r="45"></circle>
+              </svg>
+              <div class="percentage" id="authProbabilityVal">0%</div>
+            </div>
+            <div class="auth-text-area">
+              <div class="auth-message" id="authStatusText">🎯 Ready for authentication</div>
+              <div class="confidence-label">Match Confidence</div>
+            </div>
           </div>
-          <div class="probability-text">
-            Match Probability: <span id="authProbabilityVal">0%</span>
+          <div class="probability-bar-wrapper">
+            <div class="probability-bar">
+              <div class="progress" id="authProbabilityBar"></div>
+            </div>
           </div>
-          <div class="auth-message" id="authStatusText">Ready for authentication</div>
         </div>
       </section>
 
-      <section class="typing-section">
-        <h2>Type to Authenticate</h2>
-        <textarea id="typingArea" placeholder="Begin typing your password or sample text here..."></textarea>
-        <p class="instructions">Type naturally as you would normally. The system analyzes your keystroke patterns in real-time.</p>
+      <!-- Typing Section -->
+      <section class="card typing-card">
+        <div class="card-header">⌨️ Type to Authenticate</div>
+        <div class="typing-container">
+          <textarea 
+            id="typingArea" 
+            placeholder="Start typing naturally..." 
+            spellcheck="false"
+          ></textarea>
+          <div class="keystroke-counter">
+            <span>Keystrokes captured: <strong id="keystrokeCount">0</strong></span>
+          </div>
+          <p class="instructions">💡 The system analyzes your unique keystroke patterns in real-time. Type naturally for best results.</p>
+        </div>
+      </section>
+
+      <!-- Real-time Stats -->
+      <section class="card stats-card">
+        <div class="card-header">📊 Real-time Statistics</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="avgHoldTime">--</div>
+            <div class="stat-label">Avg Hold Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="avgFlightTime">--</div>
+            <div class="stat-label">Avg Flight Time</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="typingSpeed">--</div>
+            <div class="stat-label">WPM</div>
+          </div>
+        </div>
       </section>
     </main>
 
     <footer>
-      <p>&copy; 2024 DynamoAuth. Real-time keystroke authentication.</p>
+      <p>🔒 DynamoAuth - Biometric Authentication via Keystroke Dynamics | Privacy First</p>
+      <p><small>Real-time ML-powered security verification</small></p>
     </footer>
   </div>
 
   <script src="app.js"></script>
 </body>
-</html>
 </html>

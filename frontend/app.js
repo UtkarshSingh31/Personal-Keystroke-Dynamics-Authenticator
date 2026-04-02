@@ -1,48 +1,82 @@
 document.addEventListener('DOMContentLoaded', () => {
     const wsStatus = document.getElementById('wsStatus');
+    const wsStatusText = document.getElementById('wsStatusText');
     const modelSelect = document.getElementById('modelSelect');
+    const modelDesc = document.getElementById('modelDesc');
     const authStatusText = document.getElementById('authStatusText');
     const authProbabilityBar = document.getElementById('authProbabilityBar');
     const authProbabilityVal = document.getElementById('authProbabilityVal');
+    const circleProgress = document.getElementById('circleProgress');
     const typingArea = document.getElementById('typingArea');
+    const keystrokeCount = document.getElementById('keystrokeCount');
+    const avgHoldTime = document.getElementById('avgHoldTime');
+    const avgFlightTime = document.getElementById('avgFlightTime');
+    const typingSpeed = document.getElementById('typingSpeed');
 
     let ws;
     let keyDownTime = {};
     let lastRelease = null;
+    let totalKeystrokes = 0;
+    let holdTimes = [];
+    let flightTimes = [];
+    let startTime = null;
+
+    // Model descriptions
+    const modelDescriptions = {
+        'RNN': '🧠 RNN captures sequential patterns with basic memory',
+        'LSTM': '⚡ LSTM with advanced temporal pattern recognition',
+        'GRU': '🚀 GRU (lightweight) provides fast inference'
+    };
 
     function connectWebSocket() {
-        wsStatus.textContent = "Connecting...";
-        wsStatus.className = "status-indicator connecting";
+        wsStatusText.textContent = "Connecting...";
+        wsStatus.style.color = "#ffc107";
         
-        ws = new WebSocket('ws://localhost:8000/ws/detect');
+        // Connect to Hugging Face Space
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//utkarshsingh0013-dynammoauth.hf.space/ws/detect`;
+        
+        ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
-            wsStatus.textContent = "Connected";
-            wsStatus.className = "status-indicator connected";
+            wsStatusText.textContent = "Connected";
+            wsStatus.style.color = "#00ff88";
+            wsStatus.classList.add('connected');
             // Ensure model selection is sent on connect
             ws.send(JSON.stringify({ model_type: modelSelect.value }));
+            typingArea.focus();
         };
 
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             
             if (data.status === "waiting") {
-                authStatusText.textContent = data.msg;
+                authStatusText.textContent = '⏳ ' + data.msg;
                 authProbabilityBar.style.width = "0%";
                 authProbabilityVal.textContent = "0%";
+                updateCircleProgress(0);
             } else if (data.status === "success") {
                 const isOwner = data.is_owner;
                 const prob = data.probability;
+                const percentage = (prob * 100).toFixed(1);
                 
-                authStatusText.textContent = isOwner ? "Authenticated (Owner Match)" : "Intruder Detected!";
-                authProbabilityBar.style.width = `${(prob * 100).toFixed(1)}%`;
-                authProbabilityVal.textContent = `${(prob * 100).toFixed(1)}%`;
+                authStatusText.innerHTML = isOwner 
+                    ? '✅ <strong>AUTHENTICATED</strong><br><small>Welcome back!</small>' 
+                    : '⚠️ <strong>SUSPICIOUS ACTIVITY</strong><br><small>Pattern mismatch detected</small>';
+                    
+                authProbabilityBar.style.width = percentage + '%';
+                authProbabilityVal.textContent = percentage + '%';
+                updateCircleProgress(prob * 100);
+                
+                // Add glow effect based on authenticity
+                authStatusText.parentElement.className = isOwner ? 'auth-display auth-success' : 'auth-display auth-warning';
             }
         };
 
         ws.onclose = () => {
-            wsStatus.textContent = "Disconnected";
-            wsStatus.className = "status-indicator disconnected";
+            wsStatusText.textContent = "Disconnected";
+            wsStatus.style.color = "#ff4444";
+            wsStatus.classList.remove('connected');
             setTimeout(connectWebSocket, 3000); // Reconnect attempt
         };
 
@@ -56,18 +90,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Model Change Event
     modelSelect.addEventListener('change', () => {
+        const newModel = modelSelect.value;
+        modelDesc.textContent = modelDescriptions[newModel];
+        
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ model_type: modelSelect.value }));
+            ws.send(JSON.stringify({ model_type: newModel }));
             
             // Trigger UI reset visually so user knows model changed
-            authStatusText.textContent = "Model changed. Keep typing...";
+            authStatusText.innerHTML = '🔄 <strong>Model switched</strong><br><small>Analyzing with ' + newModel + '...</small>';
             authProbabilityBar.style.width = "0%";
             authProbabilityVal.textContent = "0%";
+            updateCircleProgress(0);
         }
     });
 
-    // Keystroke Capture Logic
+    // Initialize model description
+    modelDesc.textContent = modelDescriptions[modelSelect.value];
+
+    // Initialize start time on first keystroke
     typingArea.addEventListener('keydown', (e) => {
+        if (!startTime) startTime = Date.now();
         if (!keyDownTime[e.code]) {
             keyDownTime[e.code] = performance.now();
         }
@@ -83,6 +125,17 @@ document.addEventListener('DOMContentLoaded', () => {
         lastRelease = now;
 
         delete keyDownTime[e.code];
+        totalKeystrokes++;
+        holdTimes.push(hold);
+        if (flight > 0) flightTimes.push(flight);
+        
+        // Update keystroke count
+        keystrokeCount.textContent = totalKeystrokes;
+        
+        // Update statistics every 5 keystrokes
+        if (totalKeystrokes % 5 === 0) {
+            updateStats();
+        }
 
         // Send immediately to backend
         if (ws && ws.readyState === WebSocket.OPEN) {
@@ -90,9 +143,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 event: {
                     key: e.key,
                     hold_time: hold,
-                    flight_time: flight
+                    flight_time: Math.max(0, flight)
                 }
             }));
         }
     });
+
+    // Update statistics display
+    function updateStats() {
+        if (holdTimes.length > 0) {
+            const avgHold = (holdTimes.reduce((a, b) => a + b, 0) / holdTimes.length * 1000).toFixed(0);
+            avgHoldTime.textContent = avgHold + 'ms';
+        }
+        if (flightTimes.length > 0) {
+            const avgFlight = (flightTimes.reduce((a, b) => a + b, 0) / flightTimes.length * 1000).toFixed(0);
+            avgFlightTime.textContent = avgFlight + 'ms';
+        }
+        if (startTime && totalKeystrokes > 0) {
+            const minutes = (Date.now() - startTime) / 60000;
+            const words = typingArea.value.split(/\s+/).length;
+            const wpm = Math.round(words / minutes);
+            if (wpm > 0) typingSpeed.textContent = wpm + ' WPM';
+        }
+    }
+
+    // Update circle progress
+    function updateCircleProgress(percent) {
+        const circumference = 2 * Math.PI * 45;
+        const offset = circumference - (percent / 100) * circumference;
+        circleProgress.style.strokeDashoffset = offset;
+    }
 });
