@@ -31,11 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function connectWebSocket() {
         wsStatusText.textContent = "Connecting...";
         wsStatus.style.color = "#ffc107";
-        
-        // Connect to Hugging Face Space
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//utkarshsingh0013-dynammoauth.hf.space/ws/detect`;
-        
+
+        // Use local WS for local development, WSS for Hugging Face production
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const wsUrl = isLocal
+            ? 'ws://localhost:8000/ws/detect'
+            : 'wss://utkarshsingh0013-dynammoauth.hf.space/ws/detect';
+
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
