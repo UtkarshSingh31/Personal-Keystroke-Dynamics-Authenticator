@@ -8,3 +8,5 @@ data/y.npy
 
 !data/*.dvc
 !data/raw_supabase_data.json
+
+models/
