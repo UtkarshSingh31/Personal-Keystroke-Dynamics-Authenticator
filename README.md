@@ -1,32 +1,98 @@
-# DynamoAuth Backend
+# DynamoAuth
 
-A real-time keystroke authentication system using machine learning models (RNN, LSTM, GRU) to detect if the user typing is the legitimate owner.
+**DynamoAuth** is a real-time, AI-powered keystroke-dynamics authentication system. It learns how a person types from timing patterns rather than relying only on passwords or typed content.
 
-## Features
+## Live Demo
 
-- WebSocket-based real-time keystroke detection
-- Multiple ML models: RNN, LSTM, GRU
-- Data collection and storage via Supabase
-- Scalable preprocessing with StandardScaler
+Try the deployed application here: **[dynammoauth.vercel.app](https://dynammoauth.vercel.app/)**
 
-### Files Structure
+The dashboard captures typing events in the browser and displays authentication confidence in real time.
 
-- `app.py`: Main entry point for the FastAPI application
-- `app/main.py`: FastAPI app definition
-- `app/api/websockets.py`: WebSocket endpoint for detection
-- `app/core/model_manager.py`: ML model management and prediction
-- `config.py`: Configuration settings
-- `data/raw_supabase_data.json`: Training data for scaler fitting
-- `models/`: Pre-trained PyTorch models (RNN, LSTM, GRU)
+## What It Does
 
-## API Endpoints
+DynamoAuth measures two behavioral biometric signals:
 
-- `GET /`: Health check
-- `WebSocket /ws/detect`: Real-time keystroke authentication
+- **Hold time** - how long a key is pressed.
+- **Flight time** - the time between consecutive keystrokes.
 
-### WebSocket Usage
+These features are processed as fixed-length sequences and evaluated by recurrent neural-network models. The backend communicates with the frontend over a WebSocket so predictions can be updated while the user types.
 
-Connect to `/ws/detect` and send JSON messages with keystroke data:
+## Binary Classification
+
+This project performs **binary classification**:
+
+| Class | Meaning |
+| --- | --- |
+| `1` / `true` | The typing pattern matches the legitimate owner |
+| `0` / `false` | The typing pattern does not match the legitimate owner |
+
+Each model returns an owner probability between `0` and `1`. A probability above `0.5` is classified as `owner`; otherwise, it is classified as `impostor`. The response also includes the selected model and the probability used by the dashboard.
+
+## Models
+
+The backend currently supports three bidirectional PyTorch sequence models:
+
+- **RNN** - recurrent baseline for temporal patterns.
+- **LSTM** - captures longer-term dependencies in typing behavior.
+- **GRU** - a lighter recurrent alternative with strong sequence performance.
+
+The active model can be selected from the dashboard or changed through the WebSocket connection.
+
+## System Flow
+
+```text
+Browser keyboard events
+        |
+        v
+WebSocket /ws/detect
+        |
+        v
+Hold-time and flight-time features
+        |
+        v
+StandardScaler preprocessing
+        |
+        v
+RNN / LSTM / GRU inference
+        |
+        v
+Owner probability and binary decision
+        |
+        v
+Real-time dashboard
+```
+
+## Technology Stack
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Python, FastAPI, Uvicorn, WebSockets
+- **Machine learning:** PyTorch, NumPy, scikit-learn
+- **Data storage:** Supabase
+- **Deployment:** Docker and Hugging Face Spaces-compatible backend
+
+## Project Structure
+
+```text
+app.py                       Application entry point
+app/main.py                  FastAPI application
+app/api/websockets.py       Real-time detection WebSocket
+app/core/model_manager.py   Scaling, model loading, and prediction
+frontend/                    Authentication dashboard
+data/                        Training data and DVC metadata
+models/                      Trained RNN, LSTM, and GRU weights
+notebook/                    Data collection and model training workflows
+server.py                    Separate Supabase data-collection API
+```
+
+## WebSocket API
+
+Connect to:
+
+```text
+ws://<host>/ws/detect
+```
+
+Send keystroke timing events:
 
 ```json
 {
@@ -37,76 +103,69 @@ Connect to `/ws/detect` and send JSON messages with keystroke data:
 }
 ```
 
-Response:
+The backend responds with a real-time classification result:
+
 ```json
 {
   "status": "success",
   "is_owner": true,
-  "probability": 0.87
+  "probability": 0.87,
+  "model_used": "LSTM"
 }
 ```
 
-## Local Development
+The detector maintains a sliding window of up to 100 timing events and pads shorter sequences for inference.
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Set environment variables in `.env`
-3. Run: `python app.py`
+## Run Locally
 
-## Deployment on Hugging Face Spaces
+1. Clone the repository and enter the project directory.
+2. Create and activate a virtual environment.
+3. Install dependencies:
 
-### Prerequisites
-- Hugging Face account
-- Repository on GitHub
-
-### Steps
-
-1. **Create a Hugging Face Space**
-   - Go to [huggingface.co/spaces](https://huggingface.co/spaces)
-   - Click "Create new Space"
-   - Select **SDK: API**
-   - Choose appropriate license and visibility
-
-2. **Add Secrets**
-   - In Space Settings → Secrets, add:
-   - `SUPABASE_URL`: Your Supabase project URL
-   - `SUPABASE_KEY`: Your Supabase anonymous key
-
-3. **Push Code via Git**
    ```bash
-   git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/dynamoauth-backend
-   git push hf main
+   pip install -r requirements.txt
    ```
 
-4. **Use Backend-Specific Requirements**
-   - For Hugging Face, use `requirements-hf.txt` instead of the full `requirements.txt`
-   - This includes only essential dependencies and avoids conflicts
+4. Configure the required environment variables in `.env` when using the Supabase data-collection path:
 
-### Troubleshooting
+   ```env
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_KEY=your_supabase_key
+   ```
 
-**Config Error on Hugging Face?**
-- Check Space Logs for the specific error
-- Ensure `SUPABASE_URL` and `SUPABASE_KEY` are set
-- Verify `app.py` is in the root directory
-- Make sure all model files exist in `models/` directory
-- Check that `data/raw_supabase_data.json` exists
+5. Start the backend:
 
-**Space won't start?**
-- Remove unnecessary heavy packages (streamlit, mlflow, dvc, pynput)
-- Use pinned versions in requirements.txt
-- Check if torch installation completes (it's large, may take time)
+   ```bash
+   python app.py
+   ```
 
-### API Documentation
+The API is served locally on port `7860` by default. Open the frontend separately or use the deployed demo.
 
-Once deployed at `https://YOUR_USERNAME-dynamoauth-backend.hf.space`:
+## What This Project Demonstrates
 
-- **Health Check**: `GET /`
-- **WebSocket**: `wss://YOUR_USERNAME-dynamoauth-backend.hf.space/ws/detect`
+DynamoAuth demonstrates practical experience with:
 
-Example WebSocket connection:
-```javascript
-const ws = new WebSocket('wss://YOUR_USERNAME-dynamoauth-backend.hf.space/ws/detect');
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log('Is Owner:', data.is_owner);
-};
-```
+- Behavioral biometrics and keystroke-dynamics feature engineering.
+- Binary classification and probability-based authentication decisions.
+- Recurrent deep-learning architectures for time-series data.
+- Real-time WebSocket inference with FastAPI.
+- Data preprocessing, scaling, model loading, and deployment.
+- Building an interactive authentication dashboard.
+
+## Future Roadmap
+
+The next version is planned to move from a single owner-versus-impostor model toward **multi-user authentication with learned embeddings**:
+
+- Generate a compact typing embedding for each user.
+- Store enrolled user profiles and compare new sessions against them.
+- Support multiple authentication factors, such as password plus keystroke behavior.
+- Add user enrollment, profile management, and re-enrollment workflows.
+- Use metric learning or Siamese/triplet networks for similarity-based verification.
+- Combine keystroke embeddings with device, session, and risk signals.
+- Add adaptive thresholds, drift detection, and continuous re-authentication.
+- Improve privacy with encrypted biometric templates and retention controls.
+- Measure false-acceptance rate, false-rejection rate, equal-error rate, and latency across users.
+
+## Important Note
+
+Keystroke dynamics are behavioral biometric signals and should complement, not automatically replace, secure primary authentication. Production deployments should include consent, privacy safeguards, encrypted storage, rate limiting, and fallback authentication.
